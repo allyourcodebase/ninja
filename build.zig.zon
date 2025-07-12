@@ -1,0 +1,17 @@
+.{
+    .name = .ninja,
+    .fingerprint = 0x41e0b271c5c0f635,
+    .version = "1.13.1",
+    .minimum_zig_version = "0.14.1",
+    .dependencies = .{
+        .upstream = .{
+            .url = "git+https://github.com/ninja-build/ninja#79feac0f3e3bc9da9effc586cd5fea41e7550051",
+            .hash = "N-V-__8AAOVYEwASxlt97JeA4b95Zkiyccz4Y3S0GYvBoaC5",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "inline.zig",
+    },
+}
