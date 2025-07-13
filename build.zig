@@ -19,10 +19,11 @@ pub fn build(b: *std.Build) !void {
             break :blk run.addOutputFileArg("build/browse_py.h");
         },
         .python = b.option([]const u8, "python", "Python interpreter to use for the browse tool") orelse "python",
+        .strip_override = b.option(bool, "strip", "Strip the ninja exe"),
     };
 
     {
-        const exe = addNinja(b, target, optimize, config);
+        const exe = addNinja(b, target, optimize, config, .{ .strip_default = false });
         b.installArtifact(exe);
     }
 
@@ -69,6 +70,7 @@ const zon: struct {
 const NinjaConfig = struct {
     browse_py_h: std.Build.LazyPath,
     python: []const u8,
+    strip_override: ?bool,
 };
 
 fn addNinja(
@@ -76,12 +78,14 @@ fn addNinja(
     target: std.Build.ResolvedTarget,
     optimize: std.builtin.OptimizeMode,
     config: NinjaConfig,
+    opt: struct { strip_default: bool },
 ) *std.Build.Step.Compile {
     const upstream = b.dependency("upstream", .{});
     const exe = b.addExecutable(.{
         .name = "ninja",
         .target = target,
         .optimize = optimize,
+        .strip = config.strip_override orelse opt.strip_default,
     });
     switch (target.result.os.tag) {
         .windows => {},
@@ -182,7 +186,7 @@ fn ci(
         const target_dest_dir: std.Build.InstallDir = .{ .custom = ci_target_str };
         const install = b.step(b.fmt("install-{s}", .{ci_target_str}), "");
         ci_step.dependOn(install);
-        const exe = addNinja(b, target, optimize, config);
+        const exe = addNinja(b, target, optimize, config, .{ .strip_default = true });
         install.dependOn(
             &b.addInstallArtifact(exe, .{ .dest_dir = .{ .override = target_dest_dir } }).step,
         );
@@ -217,7 +221,6 @@ fn makeCiArchiveStep(
         const zip = b.addRunArtifact(host_zip_exe);
         zip.addArg(out_zip_file);
         zip.addArg("ninja.exe");
-        zip.addArg("ninja.pdb");
         zip.cwd = .{ .cwd_relative = b.getInstallPath(
             target_install_dir,
             ".",
