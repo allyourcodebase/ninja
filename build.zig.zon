@@ -8,6 +8,10 @@
             .url = "git+https://github.com/ninja-build/ninja#79feac0f3e3bc9da9effc586cd5fea41e7550051",
             .hash = "N-V-__8AAOVYEwASxlt97JeA4b95Zkiyccz4Y3S0GYvBoaC5",
         },
+        .zip = .{
+            .url = "git+https://github.com/marler8997/zipcmdline#376f65b28aa02a39f7277cd36a1b8d8f170704cc",
+            .hash = "zipcmdline-0.0.0-DFii0-FaAAAmtj5B70nXW43Ld27RctFfr7zO9EEg7tFG",
+        },
     },
     .paths = .{
         "build.zig",
